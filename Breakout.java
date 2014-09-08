@@ -1,10 +1,9 @@
 /*
  * File: Breakout.java
  * -------------------
- * Name:
- * Section Leader:
- * 
- * This file will eventually implement the game of Breakout.
+ * The goal of this program is to simulate the game Breakout, which has 10
+ * layers of bricks, a paddle and a bouncing ball.  The player has to bounce 
+ * the ball with the paddle and get rid of all the bricks.
  */
 
 import java.applet.AudioClip;
