@@ -76,7 +76,9 @@ public class Breakout extends GraphicsProgram {
 
 
 
-    /** Starts a game. */
+    /** 
+     * Starts a game. 
+     */
     private void startGame() {
         if (turn == 0) {
             nextRound();
@@ -86,23 +88,29 @@ public class Breakout extends GraphicsProgram {
         moveBall();
     }
 
-    /** Adds sound effects.*/
+    /** 
+     * Adds sound effects.
+     */
     private void sound(String filename) {
         AudioClip bounceClip = MediaTools.loadAudioClip(filename);
         bounceClip.play(); 
     }
 
-    /** Moves the ball, checks for collision with walls, paddle, and bricks. */
+    /** 
+     * Moves the ball, checks for collision with walls, paddle, and bricks. 
+     */
     private void moveBall() {
         while (!gameOver) {
             ball.move(vx, vy);
-            checkForCollision();
+            checkForWallCollision();
             checkForObjectCollision();
             pause(20);
         }
     }
 
-    /** Sets the x direction of the ball. */
+    /** 
+     * Sets the x direction of the ball. 
+     */
     private void setVX() {
         vx = rgen.nextDouble(1.0, 3.0);
         if (rgen.nextBoolean(0.5)) {
@@ -116,13 +124,14 @@ public class Breakout extends GraphicsProgram {
     private void checkForObjectCollision() {
         GObject collider = getCollidingObject();
         if (collider != null) {
+            vy = -vy;
             if (collider == paddle) {
                 sound("bounce.au");
-                vy = -vy;
+            // If the colliding object is not the paddle it must be a brick, in
+            // that case the brick is removed from the screen. 
             } else {
                 sound("sound.wav");
                 remove(collider);
-                vy = -vy;
                 ballHits++;
                 if (ballHits >= NBRICK_ROWS * NBRICK_ROWS) {
                     gameOver();
@@ -131,7 +140,9 @@ public class Breakout extends GraphicsProgram {
         }
     }
     
-    /** Announces game over depending on score.*/
+    /** 
+     * Announces game over depending on score.
+     */
     private void gameOver() {
         gameOver = true;
         if (ballHits >= NBRICK_ROWS * NBRICK_ROWS) {
@@ -165,10 +176,14 @@ public class Breakout extends GraphicsProgram {
         return null;
     }
     
-    /** Checks for ball collision with walls. If ball hits the bottom wall
-     * increase turn until game over.
-    */
-    private void checkForCollision() {
+    /** Checks for ball collision with walls. If the ball hits any wall other
+     * than the bottom one, switch ball direction. If ball hits the bottom wall
+     * terminate the turn, increase turn count until game over.
+     */
+    private void checkForWallCollision() {
+        // If the y or x coordinate are equal or smaller than 0 or equal/larger 
+        // than the width or height of the screen, minus the size of the ball, 
+        // it means the ball has reached a wall.
         if (ball.getLocation().getY() <= 0) {
             vy = -vy;
         }
@@ -187,7 +202,9 @@ public class Breakout extends GraphicsProgram {
         }
     }
     
-    /** Displays an alert message for the beginning of a round. */
+    /** 
+     * Displays an alert message for the beginning of a round. 
+     */
     private void nextRound() {
         makeLabel("Get Ready");
         makeLabel("3");
@@ -199,7 +216,9 @@ public class Breakout extends GraphicsProgram {
         }
     }
     
-    /** Displays a text message at the center of the board*/
+    /** 
+     * Displays a text message at the center of the board.
+     */
     private void makeLabel(String text) {
         GLabel label = new GLabel(text);
         label.setFont("Ariel-40");
@@ -209,7 +228,9 @@ public class Breakout extends GraphicsProgram {
         remove(label);
     }
     
-    /** Creates the ball. */
+    /** 
+     * Creates the ball. 
+     */
     private void makeBall() {
         ball = new GOval(BALL_RADIUS * 2 - BALL_RADIUS, BALL_RADIUS * 2
                 - BALL_RADIUS);
@@ -230,7 +251,9 @@ public class Breakout extends GraphicsProgram {
         add(paddle, lastX, HEIGHT - PADDLE_Y_OFFSET);
     }
 
-    /** Sets up the board with 10 rows of colored bricks and a paddle. */
+    /** 
+     * Sets up the board with 10 rows of colored bricks and a paddle. 
+     */
     private void setBoard() {
         for (int i = 0; i < NBRICK_ROWS; i++) {
             buildRows(defineColor(i), i);
@@ -245,13 +268,13 @@ public class Breakout extends GraphicsProgram {
      * @param level, the level of the row.
      */
     private void buildRows(Color color, int level) {
-        int x;
-        int y;
         for (int i = 0; i < NBRICK_ROWS; i++) {
             GRect brick = makeBrick();
             brick.setFilled(isEnabled());
             brick.setFillColor(color);
             brick.setColor(color);
+            int x;
+            int y;
             x = i * (BRICK_WIDTH + BRICK_SEP) + LEFT_ROW_POS;
             y = BRICK_Y_OFFSET + level * (BRICK_HEIGHT + BRICK_SEP);
             add(brick, x, y);
@@ -264,26 +287,27 @@ public class Breakout extends GraphicsProgram {
      * @return Color, the color of the row.
      */
     private Color defineColor(int num) {
-        Color color = null;
         if (num > 7) {
-            return color = Color.CYAN;
+            return Color.CYAN;
         }
         if (num > 5) {
-            return color = Color.GREEN;
+            return Color.GREEN;
         }
         if (num > 3) {
-            return color = Color.YELLOW;
+            return Color.YELLOW;
         }
         if (num > 1) {
-            return color = Color.ORANGE;
+            return Color.ORANGE;
         }
         if (num >= 0) {
-            return color = Color.RED;
+            return Color.RED;
         }
-        return color;
+        return null;
     }
     
-    /** Creates the paddle. */
+    /** 
+     * Creates the paddle. 
+     */
     private void makePaddle() {
         GRect paddle = new GRect(PADDLE_WIDTH, PADDLE_HEIGHT);
         paddle.setFilled(isEnabled());
@@ -300,7 +324,9 @@ public class Breakout extends GraphicsProgram {
         return (new GRect(BRICK_WIDTH, BRICK_HEIGHT));
     }
     
-    /** Runs the Breakout program. */
+    /** 
+     * Runs the Breakout program. 
+     */
     public void run() {
         setBoard();
         startGame();
